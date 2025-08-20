@@ -1,0 +1,16 @@
+name,type,table,address,width,units,desc,role
+SIS_TANK_LSHH,BOOL,DI,20001,1,,Independent High-High level switch (SIS input),Sensor
+SENSOR_TANK_LL,BOOL,DI,20002,1,,Low-Low protection for pump,Sensor
+SENSOR_SPILL_AREA,BOOL,DI,20003,1,,Area/leak detection,Sensor
+LT_TANK_LEVEL_PCT,INT,IR,30011,16,0.01%,Tank level 0-100%,Sensor
+ACT_INLET_VALVE,BOOL,COIL,1,1,,Inlet to tank/process,Actuator
+ACT_FEED_PUMP,BOOL,COIL,2,1,,Pump from tank,Actuator
+ACT_OUTLET_VALVE,BOOL,COIL,3,1,,Outlet to downstream,Actuator
+ACT_SLOP_VALVE,BOOL,COIL,4,1,,Liquid diversion to slop/API separator,Actuator
+ACT_FLARE_VALVE,BOOL,COIL,5,1,,Vapor relief to flare/KOD,Actuator
+CMD_SIS_RESET,BOOL,DI,20004,1,,Operator command to reset SIS latch,Command
+ALM_SIS_LSHH_TRIP,BOOL,COIL,6,1,,Latched SIS trip,Alarm
+ALM_LL_TRIP,BOOL,COIL,7,1,,Pump low-low trip,Alarm
+SP_HI_PCT,INT,HR,10,16,0.01%,High level setpoint (80.00%),Setpoint
+SP_LO_PCT,INT,HR,11,16,0.01%,Low level setpoint (20.00%),Setpoint
+

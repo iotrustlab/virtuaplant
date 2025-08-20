@@ -1,0 +1,7 @@
+pymodbus>=3.0.0
+pygame>=2.0.0
+pymunk>=6.0.0
+pyyaml>=6.0
+asyncio-mqtt>=0.11.0
+
+

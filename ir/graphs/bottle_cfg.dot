@@ -1,0 +1,7 @@
+digraph CFG {
+  rankdir=TB;
+  node [shape=box, style=filled, fillcolor=lightblue];
+  edge [color=black];
+
+
+}

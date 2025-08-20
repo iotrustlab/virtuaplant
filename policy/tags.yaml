@@ -1,0 +1,26 @@
+prefixes:
+  sensor: "SENSOR_"
+  actuator: "ACT_"
+  setpoint: "SP_"
+  cmd: "CMD_"
+  alarm: "ALARM_"
+
+roles:
+  SENSOR_*: Sensor
+  ACT_*: Actuator
+  SP_*: Setpoint
+  CMD_*: Command
+  ALARM_*: Internal
+
+type_rules:
+  SENSOR_*: [BOOL, INT, REAL]
+  ACT_*: [BOOL]
+  SP_*: [INT, REAL]
+
+modbus_tables:
+  SENSOR_BOOL: "DI"
+  SENSOR_ANALOG: "IR"
+  ACT_BOOL: "COIL"
+  SETPOINT: "HR"
+
+

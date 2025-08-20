@@ -1,0 +1,309 @@
+{
+  "metadata": {
+    "total_plcs": 1,
+    "plc_names": [
+      "Main"
+    ],
+    "total_shared_tags": 0,
+    "total_conflicts": 0
+  },
+  "controllers": [
+    {
+      "name": "Main",
+      "source": "openplc",
+      "has_overlay": false,
+      "valid": true
+    }
+  ],
+  "plc_summary": {
+    "Main": {
+      "controller_tags": 7,
+      "programs": 1,
+      "routines": 1
+    }
+  },
+  "detailed_components": {
+    "Main": {
+      "tags": {
+        "controller_tags": [
+          {
+            "name": "outlet_valve_open",
+            "data_type": "BOOL",
+            "scope": "Program",
+            "value": null,
+            "description": "OpenPLC variable: outlet_valve_open",
+            "external_access": null,
+            "radix": null,
+            "constant": false,
+            "alias_for": null,
+            "array_dimensions": null,
+            "initial_value": "FALSE",
+            "user_defined_type": null
+          },
+          {
+            "name": "sep_valve_open",
+            "data_type": "BOOL",
+            "scope": "Program",
+            "value": null,
+            "description": "OpenPLC variable: sep_valve_open",
+            "external_access": null,
+            "radix": null,
+            "constant": false,
+            "alias_for": null,
+            "array_dimensions": null,
+            "initial_value": "FALSE",
+            "user_defined_type": null
+          },
+          {
+            "name": "waste_valve_open",
+            "data_type": "BOOL",
+            "scope": "Program",
+            "value": null,
+            "description": "OpenPLC variable: waste_valve_open",
+            "external_access": null,
+            "radix": null,
+            "constant": false,
+            "alias_for": null,
+            "array_dimensions": null,
+            "initial_value": "FALSE",
+            "user_defined_type": null
+          },
+          {
+            "name": "relief_timer",
+            "data_type": "STRING",
+            "scope": "Program",
+            "value": null,
+            "description": "OpenPLC variable: relief_timer",
+            "external_access": null,
+            "radix": null,
+            "constant": false,
+            "alias_for": null,
+            "array_dimensions": null,
+            "initial_value": null,
+            "user_defined_type": null
+          },
+          {
+            "name": "low_level_alarm",
+            "data_type": "BOOL",
+            "scope": "Program",
+            "value": null,
+            "description": "OpenPLC variable: low_level_alarm",
+            "external_access": null,
+            "radix": null,
+            "constant": false,
+            "alias_for": null,
+            "array_dimensions": null,
+            "initial_value": "FALSE",
+            "user_defined_type": null
+          },
+          {
+            "name": "spill_alarm",
+            "data_type": "BOOL",
+            "scope": "Program",
+            "value": null,
+            "description": "OpenPLC variable: spill_alarm",
+            "external_access": null,
+            "radix": null,
+            "constant": false,
+            "alias_for": null,
+            "array_dimensions": null,
+            "initial_value": "FALSE",
+            "user_defined_type": null
+          },
+          {
+            "name": "critical_level_alarm",
+            "data_type": "BOOL",
+            "scope": "Program",
+            "value": null,
+            "description": "OpenPLC variable: critical_level_alarm",
+            "external_access": null,
+            "radix": null,
+            "constant": false,
+            "alias_for": null,
+            "array_dimensions": null,
+            "initial_value": "FALSE",
+            "user_defined_type": null
+          }
+        ],
+        "program_tags": {
+          "Main": []
+        },
+        "summary": {
+          "total_controller_tags": 7,
+          "total_program_tags": 0
+        }
+      },
+      "control_flow": {
+        "routines": {
+          "Main": {
+            "Main": {
+              "type": "ST",
+              "description": null,
+              "control_flow": {
+                "type": "structured_text",
+                "control_flow": [
+                  {
+                    "type": "action",
+                    "actions": [
+                      "feed_pump_running : BOOL := FALSE;",
+                      "outlet_valve_open : BOOL := FALSE;",
+                      "sep_valve_open : BOOL := FALSE;",
+                      "waste_valve_open : BOOL := FALSE;",
+                      "high_level_threshold : INT := 80;   // 80% tank level",
+                      "low_level_threshold : INT := 20;    // 20% tank level",
+                      "critical_level_threshold : INT := 95; // 95% tank level",
+                      "processing_phase : INT := 0;        // 0=idle, 1=filling, 2=processing, 3=emptying",
+                      "processing_timer : TON;",
+                      "relief_timer : TON;",
+                      "high_level_alarm : BOOL := FALSE;",
+                      "low_level_alarm : BOOL := FALSE;",
+                      "spill_alarm : BOOL := FALSE;",
+                      "critical_level_alarm : BOOL := FALSE;",
+                      "tank_level_high := (SENSOR_TANK_LEVEL > high_level_threshold);",
+                      "tank_level_low := (SENSOR_TANK_LEVEL < low_level_threshold);",
+                      "spill_detected := (SENSOR_OIL_SPILL > 0);",
+                      "processing_active := (processing_phase > 0);"
+                    ]
+                  },
+                  {
+                    "type": "branch",
+                    "condition": "spill_detected",
+                    "actions": [
+                      "spill_alarm := TRUE;",
+                      "feed_pump_running := FALSE;",
+                      "outlet_valve_open := FALSE;",
+                      "sep_valve_open := FALSE;",
+                      "waste_valve_open := FALSE;",
+                      "processing_phase := 0;",
+                      "processing_active := FALSE;"
+                    ]
+                  },
+                  {
+                    "type": "branch",
+                    "condition": "SENSOR_TANK_LEVEL > critical_level_threshold",
+                    "actions": [
+                      "critical_level_alarm := TRUE;",
+                      "waste_valve_open := TRUE;",
+                      "feed_pump_running := FALSE;"
+                    ]
+                  },
+                  {
+                    "type": "branch",
+                    "condition": "else",
+                    "actions": [
+                      "critical_level_alarm := FALSE;"
+                    ]
+                  },
+                  {
+                    "type": "branch",
+                    "condition": "NOT spill_detected AND NOT critical_level_alarm",
+                    "actions": []
+                  },
+                  {
+                    "type": "branch",
+                    "condition": "processing_phase = 0 AND tank_level_low",
+                    "actions": [
+                      "processing_phase := 1;",
+                      "feed_pump_running := TRUE;",
+                      "outlet_valve_open := FALSE;",
+                      "sep_valve_open := FALSE;",
+                      "waste_valve_open := FALSE;"
+                    ]
+                  },
+                  {
+                    "type": "branch",
+                    "condition": "processing_phase = 1 AND tank_level_high",
+                    "actions": [
+                      "processing_phase := 2;",
+                      "feed_pump_running := FALSE;",
+                      "outlet_valve_open := TRUE;",
+                      "sep_valve_open := TRUE;",
+                      "processing_timer(IN := TRUE, PT := T#10S);"
+                    ]
+                  },
+                  {
+                    "type": "branch",
+                    "condition": "processing_phase = 2",
+                    "actions": [
+                      "processing_timer(IN := TRUE, PT := T#10S);"
+                    ]
+                  },
+                  {
+                    "type": "branch",
+                    "condition": "processing_timer.Q",
+                    "actions": [
+                      "processing_phase := 3;",
+                      "outlet_valve_open := FALSE;",
+                      "sep_valve_open := FALSE;",
+                      "waste_valve_open := TRUE;",
+                      "relief_timer(IN := TRUE, PT := T#5S);"
+                    ]
+                  },
+                  {
+                    "type": "branch",
+                    "condition": "processing_phase = 3",
+                    "actions": [
+                      "relief_timer(IN := TRUE, PT := T#5S);"
+                    ]
+                  },
+                  {
+                    "type": "branch",
+                    "condition": "relief_timer.Q",
+                    "actions": [
+                      "processing_phase := 0;",
+                      "waste_valve_open := FALSE;",
+                      "relief_timer(IN := FALSE);"
+                    ]
+                  },
+                  {
+                    "type": "branch",
+                    "condition": "processing_phase <> 2",
+                    "actions": [
+                      "processing_timer(IN := FALSE);"
+                    ]
+                  },
+                  {
+                    "type": "branch",
+                    "condition": "tank_level_high AND NOT critical_level_alarm",
+                    "actions": [
+                      "high_level_alarm := TRUE;"
+                    ]
+                  },
+                  {
+                    "type": "branch",
+                    "condition": "else",
+                    "actions": [
+                      "high_level_alarm := FALSE;"
+                    ]
+                  },
+                  {
+                    "type": "branch",
+                    "condition": "tank_level_low AND processing_phase = 0",
+                    "actions": [
+                      "low_level_alarm := TRUE;"
+                    ]
+                  },
+                  {
+                    "type": "branch",
+                    "condition": "else",
+                    "actions": [
+                      "low_level_alarm := FALSE;",
+                      "ACT_FEED_PUMP := feed_pump_running;",
+                      "ACT_OUTLET_VALVE := outlet_valve_open;",
+                      "ACT_SEP_VALVE := sep_valve_open;",
+                      "ACT_WASTE_VALVE := waste_valve_open;"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": {
+          "total_programs": 1,
+          "total_routines": 1
+        }
+      }
+    }
+  }
+}

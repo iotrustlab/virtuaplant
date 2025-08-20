@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
+         http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+
+  <key id="type" for="node" attr.name="type" attr.type="string"/>
+  <key id="routine" for="node" attr.name="routine" attr.type="string"/>
+  <key id="defs" for="node" attr.name="defs" attr.type="string"/>
+  <key id="uses" for="node" attr.name="uses" attr.type="string"/>
+  <key id="shared_tags" for="edge" attr.name="shared_tags" attr.type="string"/>
+
+  <graph id="virtuaplant_cfg" edgedefault="directed">
+  </graph>
+</graphml>

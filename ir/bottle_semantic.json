@@ -1,0 +1,219 @@
+{
+  "metadata": {
+    "total_plcs": 1,
+    "plc_names": [
+      "Main"
+    ],
+    "total_shared_tags": 0,
+    "total_conflicts": 0
+  },
+  "detailed_components": {
+    "Main": {
+      "tags": {
+        "controller_tags": [
+          {
+            "name": "motor_running",
+            "data_type": "BOOL",
+            "scope": "Program",
+            "value": null,
+            "description": "OpenPLC variable: motor_running",
+            "external_access": null,
+            "radix": null,
+            "constant": false,
+            "alias_for": null,
+            "array_dimensions": null,
+            "initial_value": "FALSE",
+            "user_defined_type": null
+          },
+          {
+            "name": "nozzle_open",
+            "data_type": "BOOL",
+            "scope": "Program",
+            "value": null,
+            "description": "OpenPLC variable: nozzle_open",
+            "external_access": null,
+            "radix": null,
+            "constant": false,
+            "alias_for": null,
+            "array_dimensions": null,
+            "initial_value": "FALSE",
+            "user_defined_type": null
+          },
+          {
+            "name": "bottle_filling",
+            "data_type": "BOOL",
+            "scope": "Program",
+            "value": null,
+            "description": "OpenPLC variable: bottle_filling",
+            "external_access": null,
+            "radix": null,
+            "constant": false,
+            "alias_for": null,
+            "array_dimensions": null,
+            "initial_value": "FALSE",
+            "user_defined_type": null
+          },
+          {
+            "name": "low_level_alarm",
+            "data_type": "BOOL",
+            "scope": "Program",
+            "value": null,
+            "description": "OpenPLC variable: low_level_alarm",
+            "external_access": null,
+            "radix": null,
+            "constant": false,
+            "alias_for": null,
+            "array_dimensions": null,
+            "initial_value": "FALSE",
+            "user_defined_type": null
+          }
+        ],
+        "program_tags": {
+          "Main": []
+        },
+        "summary": {
+          "total_controller_tags": 4,
+          "total_program_tags": 0
+        }
+      },
+      "control_flow": {
+        "routines": {
+          "Main": {
+            "Main": {
+              "type": "ST",
+              "description": null,
+              "control_flow": {
+                "type": "structured_text",
+                "control_flow": [
+                  {
+                    "type": "action",
+                    "actions": [
+                      "start_latch : BOOL := FALSE;",
+                      "motor_running : BOOL := FALSE;",
+                      "nozzle_open : BOOL := FALSE;",
+                      "bottle_filling : BOOL := FALSE;",
+                      "fill_timer : TON;",
+                      "high_level_alarm : BOOL := FALSE;",
+                      "low_level_alarm : BOOL := FALSE;"
+                    ]
+                  },
+                  {
+                    "type": "branch",
+                    "condition": "CMD_RUN AND NOT start_latch",
+                    "actions": [
+                      "start_latch := TRUE;",
+                      "system_running := TRUE;"
+                    ]
+                  },
+                  {
+                    "type": "branch",
+                    "condition": "NOT CMD_RUN",
+                    "actions": [
+                      "start_latch := FALSE;",
+                      "system_running := FALSE;",
+                      "motor_running := FALSE;",
+                      "nozzle_open := FALSE;",
+                      "bottle_filling := FALSE;"
+                    ]
+                  },
+                  {
+                    "type": "branch",
+                    "condition": "system_running",
+                    "actions": [
+                      "bottle_in_position := SENSOR_LIMIT_SWITCH;",
+                      "bottle_filled := SENSOR_LEVEL_SENSOR;"
+                    ]
+                  },
+                  {
+                    "type": "branch",
+                    "condition": "bottle_in_position",
+                    "actions": [
+                      "motor_running := FALSE;"
+                    ]
+                  },
+                  {
+                    "type": "branch",
+                    "condition": "bottle_filled OR NOT bottle_in_position",
+                    "actions": [
+                      "motor_running := TRUE;"
+                    ]
+                  },
+                  {
+                    "type": "branch",
+                    "condition": "bottle_in_position AND NOT bottle_filled",
+                    "actions": [
+                      "nozzle_open := TRUE;",
+                      "bottle_filling := TRUE;"
+                    ]
+                  },
+                  {
+                    "type": "branch",
+                    "condition": "else",
+                    "actions": [
+                      "nozzle_open := FALSE;",
+                      "bottle_filling := FALSE;",
+                      "fill_timer(IN := bottle_filling, PT := T#5S);"
+                    ]
+                  },
+                  {
+                    "type": "branch",
+                    "condition": "fill_timer.Q",
+                    "actions": [
+                      "nozzle_open := FALSE;",
+                      "bottle_filling := FALSE;"
+                    ]
+                  },
+                  {
+                    "type": "branch",
+                    "condition": "bottle_filled AND bottle_in_position AND nozzle_open",
+                    "actions": [
+                      "high_level_alarm := TRUE;"
+                    ]
+                  },
+                  {
+                    "type": "branch",
+                    "condition": "else",
+                    "actions": [
+                      "high_level_alarm := FALSE;"
+                    ]
+                  },
+                  {
+                    "type": "branch",
+                    "condition": "system_running AND NOT bottle_in_position AND NOT bottle_filled",
+                    "actions": [
+                      "low_level_alarm := TRUE;"
+                    ]
+                  },
+                  {
+                    "type": "branch",
+                    "condition": "else",
+                    "actions": [
+                      "low_level_alarm := FALSE;"
+                    ]
+                  },
+                  {
+                    "type": "branch",
+                    "condition": "else",
+                    "actions": [
+                      "motor_running := FALSE;",
+                      "nozzle_open := FALSE;",
+                      "bottle_filling := FALSE;",
+                      "high_level_alarm := FALSE;",
+                      "low_level_alarm := FALSE;",
+                      "ACT_MOTOR := motor_running;",
+                      "ACT_NOZZLE := nozzle_open;"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": {
+          "total_programs": 1,
+          "total_routines": 1
+        }
+      }
+    }
+  }
+}

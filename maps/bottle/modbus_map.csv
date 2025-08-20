@@ -1,0 +1,8 @@
+name,type,table,address,width,units,desc,role
+SENSOR_LIMIT_SWITCH,BOOL,DI,2,1,,Limit switch detects bottle in position,Sensor
+SENSOR_LEVEL_SENSOR,BOOL,DI,1,1,,Level sensor detects bottle filled,Sensor
+ACT_MOTOR,BOOL,COIL,3,1,,Conveyor motor control,Actuator
+ACT_NOZZLE,BOOL,COIL,4,1,,Water nozzle valve control,Actuator
+CMD_RUN,BOOL,COIL,16,1,,System run command,Command
+
+
